@@ -17,5 +17,11 @@ describe("Connexion utilisateur", () => {
     cy.get('[data-cy="login-input-username"]').type("test2@test.fr");
     cy.get('[data-cy="login-input-password"]').type("testtest");
     cy.get('[data-cy="login-submit"]').click();
+
+    cy.url().should("eq", "http://localhost:8080/#/");
+
+    cy.get('[data-cy="nav-link-logout"]')
+      .should("be.visible")
+      .and("contain", "Déconnexion");
   });
 });
