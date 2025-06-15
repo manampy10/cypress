@@ -227,4 +227,11 @@ describe("Tests API", () => {
       });
     });
   });
+
+  it("GET /reviews retourne la liste des avis", () => {
+    cy.request("http://localhost:8081/reviews").then((res) => {
+      expect(res.status).to.eq(200);
+      expect(res.body).to.be.an("array");
+    });
+  });
 });
