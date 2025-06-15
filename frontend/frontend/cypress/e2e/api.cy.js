@@ -32,6 +32,7 @@ describe("Tests API", () => {
       });
     });
   });
+
   it("GET /products retourne une liste de produits", () => {
     cy.request(`${baseUrl}/products`).then((response) => {
       expect(response.status).to.eq(200);
@@ -128,6 +129,101 @@ describe("Tests API", () => {
         },
       }).then((response) => {
         expect(response.status).to.eq(200);
+      });
+    });
+  });
+
+  it("PUT /orders/{id}/change-quantity modifie la quantité d'un produit", () => {
+    let token;
+    let orderLineId;
+
+    cy.request("POST", "http://localhost:8081/login", {
+      username: "test2@test.fr",
+      password: "testtest",
+    }).then((loginRes) => {
+      token = loginRes.body.token;
+
+      cy.request({
+        method: "PUT",
+        url: "http://localhost:8081/orders/add",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: {
+          product: 3,
+          quantity: 1,
+        },
+      }).then(() => {
+        cy.request({
+          method: "GET",
+          url: "http://localhost:8081/orders",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((orderRes) => {
+          const lines = orderRes.body.orderLines;
+          expect(lines.length).to.be.greaterThan(0);
+          orderLineId = lines[lines.length - 1].id;
+
+          cy.request({
+            method: "PUT",
+            url: `http://localhost:8081/orders/${orderLineId}/change-quantity`,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: {
+              quantity: 2,
+            },
+          }).then((changeRes) => {
+            expect(changeRes.status).to.eq(200);
+          });
+        });
+      });
+    });
+  });
+
+  it("DELETE /orders/{id}/delete supprime une ligne du panier", () => {
+    let token;
+    let orderLineId;
+
+    cy.request("POST", "http://localhost:8081/login", {
+      username: "test2@test.fr",
+      password: "testtest",
+    }).then((loginRes) => {
+      token = loginRes.body.token;
+
+      cy.request({
+        method: "PUT",
+        url: "http://localhost:8081/orders/add",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: {
+          product: 3,
+          quantity: 1,
+        },
+      }).then(() => {
+        cy.request({
+          method: "GET",
+          url: "http://localhost:8081/orders",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((orderRes) => {
+          const lines = orderRes.body.orderLines;
+          expect(lines.length).to.be.greaterThan(0);
+          orderLineId = lines[lines.length - 1].id;
+
+          cy.request({
+            method: "DELETE",
+            url: `http://localhost:8081/orders/${orderLineId}/delete`,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((deleteRes) => {
+            expect(deleteRes.status).to.eq(200);
+          });
+        });
       });
     });
   });
