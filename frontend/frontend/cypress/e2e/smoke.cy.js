@@ -1,6 +1,6 @@
 describe("Smoke tests", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/#/login");
+    cy.visit("/#/login");
   });
 
   it("affiche les champs et bouton de connexion", () => {
@@ -16,10 +16,10 @@ describe("Smoke tests", () => {
 
     cy.url().should("include", "/#/");
 
-    cy.get('[data-cy="product-home-link"]').first().click(); // Consulter
+    cy.get('[data-cy="product-home-link"]').first().click();
 
     cy.url().should("include", "/#/products/");
 
-    cy.get('[data-cy="detail-product-add"]', { timeout: 5000 }).should("exist"); //présent uniquement sur la page produit
+    cy.get('[data-cy="detail-product-add"]', { timeout: 5000 }).should("exist");
   });
 });
